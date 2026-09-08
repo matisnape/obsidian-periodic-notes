@@ -53,6 +53,7 @@ export const DEFAULT_PERIODIC_CONFIG: PeriodicConfig = Object.freeze({
   format: "",
   templatePath: "",
   folder: "",
+  allowPrefixMatch: false,
 });
 
 export class PeriodicNotesSettingsTab extends PluginSettingTab {

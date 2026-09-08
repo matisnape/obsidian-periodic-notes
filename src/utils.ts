@@ -188,6 +188,32 @@ export function getPossibleFormats(
   return [format];
 }
 
+/**
+ * Try to parse `input` against each of `formats`, strictly first; if none
+ * match exactly, fall back to a loose parse and accept it only if the
+ * reformatted date is a prefix of the original string (e.g. a weekly note
+ * named "2026-W07, 09.02 - 15.02.md" matching format "gggg-[W]ww").
+ */
+export function getDateWithPrefixFallback(
+  input: string,
+  formats: string[],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  granularity: Granularity
+): { date: Moment | null; isExactMatch: boolean } {
+  for (const format of formats) {
+    const date = window.moment(input, format, true);
+    if (date.isValid()) return { date, isExactMatch: true };
+  }
+  for (const format of formats) {
+    const date = window.moment(input, format, false);
+    if (date.isValid()) {
+      const formatted = date.format(format);
+      if (input.startsWith(formatted)) return { date, isExactMatch: false };
+    }
+  }
+  return { date: null, isExactMatch: false };
+}
+
 export function getFolder(calendarSet: CalendarSet, granularity: Granularity): string {
   return calendarSet[granularity]?.folder || "/";
 }

@@ -14,6 +14,7 @@
   import type { Writable } from "svelte/store";
   import writableDerived from "svelte-writable-derived";
   import OpenAtStartupSetting from "src/settings/components/OpenAtStartupSetting.svelte";
+  import AllowPrefixMatchSetting from "src/settings/components/AllowPrefixMatchSetting.svelte";
 
   export let app: App;
   export let calendarSetId: string;
@@ -90,6 +91,7 @@
       <NoteFormatSetting {config} {granularity} />
       <NoteFolderSetting {app} {config} {granularity} />
       <NoteTemplateSetting {app} {config} {granularity} />
+      <AllowPrefixMatchSetting {config} {granularity} />
       <OpenAtStartupSetting {config} {settings} {granularity} />
     </div>
   {/if}

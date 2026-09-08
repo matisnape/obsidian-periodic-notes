@@ -16,7 +16,11 @@ import type PeriodicNotesPlugin from "./main";
 import { getLooselyMatchedDate } from "./parser";
 import { getDateInput } from "./settings/validation";
 import { granularities, type Granularity, type PeriodicConfig } from "./types";
-import { applyPeriodicTemplateToFile, getPossibleFormats } from "./utils";
+import {
+  applyPeriodicTemplateToFile,
+  getDateWithPrefixFallback,
+  getPossibleFormats,
+} from "./utils";
 
 export type MatchType = "filename" | "frontmatter" | "date-prefixed";
 
@@ -198,8 +202,14 @@ export class PeriodicNotesCache extends Component {
 
         const formats = getPossibleFormats(calendarSet, granularity);
         const dateInputStr = getDateInput(file, formats[0], granularity);
-        const date = window.moment(dateInputStr, formats, true);
-        if (date.isValid()) {
+        const periodicConfig = calendarSet[granularity];
+        const allowPrefixMatch = periodicConfig?.allowPrefixMatch ?? false;
+        const { date, isExactMatch } = getDateWithPrefixFallback(
+          dateInputStr,
+          formats,
+          granularity
+        );
+        if (date && date.isValid() && (isExactMatch || allowPrefixMatch)) {
           const metadata = {
             calendarSet: calendarSet.id,
             filePath: file.path,
@@ -207,7 +217,7 @@ export class PeriodicNotesCache extends Component {
             granularity,
             canonicalDateStr: getCanonicalDateString(granularity, date),
             matchData: {
-              exact: true,
+              exact: isExactMatch,
               matchType: "filename",
             },
           } as PeriodicNoteCachedMetadata;
