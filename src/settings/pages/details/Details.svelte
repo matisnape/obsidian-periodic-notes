@@ -102,7 +102,9 @@
 
   onMount(() => {
     setIcon(optionsEl, "more-vertical", 18);
-    document.getElementsByClassName("vertical-tab-content")[0].scroll(0, 0);
+    // Obsidian 1.13 changed the settings DOM; ".vertical-tab-content" may not
+    // exist at mount time, so guard against it being absent.
+    document.getElementsByClassName("vertical-tab-content")[0]?.scroll(0, 0);
 
     if ($router.eState["shouldRename"]) {
       focusEditableEl(nameEl);
